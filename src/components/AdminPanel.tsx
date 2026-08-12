@@ -871,14 +871,27 @@ export function AdminPanel({ settings, setSettings, onExit }: Props) {
                 </div>
                 
                 {settings.paymentPending && (
-                  <div className="pt-4 border-t border-stone-100">
-                    <label className="block text-sm font-medium text-stone-800 mb-2">Holding Page Text</label>
-                    <textarea
-                      value={settings.paymentPendingText || "'Pranay weds Alisha' wedding Invitation website didn't purchase yet"}
-                      onChange={(e) => setSettings(prev => ({ ...prev, paymentPendingText: e.target.value }))}
-                      className="w-full px-3 py-2 border border-stone-200 rounded-md focus:ring-stone-900 sm:text-sm text-stone-600 resize-none"
-                      rows={3}
-                    />
+                  <div className="pt-4 border-t border-stone-100 space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-stone-800 mb-2">Holding Page Text</label>
+                      <textarea
+                        value={settings.paymentPendingText || "'Pranay weds Alisha' wedding Invitation website didn't purchase yet"}
+                        onChange={(e) => setSettings(prev => ({ ...prev, paymentPendingText: e.target.value }))}
+                        className="w-full px-3 py-2 border border-stone-200 rounded-md focus:ring-stone-900 sm:text-sm text-stone-600 resize-none"
+                        rows={3}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-stone-800 mb-2">Admin Lock Password</label>
+                      <input
+                        type="text"
+                        value={settings.adminPassword || 'admin123'}
+                        onChange={(e) => setSettings(prev => ({ ...prev, adminPassword: e.target.value }))}
+                        className="w-full px-3 py-2 border border-stone-200 rounded-md focus:ring-stone-900 sm:text-sm text-stone-600"
+                        placeholder="admin123"
+                      />
+                      <p className="text-xs text-stone-500 mt-1">Required to access this panel when the website is locked.</p>
+                    </div>
                   </div>
                 )}
               </div>

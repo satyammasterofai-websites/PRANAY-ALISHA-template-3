@@ -61,6 +61,7 @@ export interface ECardSettings {
   // New section option for holding page
   paymentPending?: boolean;
   paymentPendingText?: string;
+  adminPassword?: string;
 }
 
 export const defaultSettings: ECardSettings = {

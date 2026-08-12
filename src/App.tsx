@@ -27,6 +27,10 @@ export default function App() {
     return new URLSearchParams(window.location.search).get('id') || 'main-settings';
   });
 
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+
   // Load settings from Firestore or LocalStorage fallback
   useEffect(() => {
     const loadSettings = async () => {
@@ -242,7 +246,24 @@ export default function App() {
   };
 
   const handleOpenAdmin = () => {
-    setCurrentView('admin');
+    if (settings.paymentPending) {
+      setShowPasswordPrompt(true);
+    } else {
+      setCurrentView('admin');
+    }
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const correctPassword = settings.adminPassword || 'admin123';
+    if (passwordInput === correctPassword) {
+      setShowPasswordPrompt(false);
+      setPasswordInput('');
+      setPasswordError(false);
+      setCurrentView('admin');
+    } else {
+      setPasswordError(true);
+    }
   };
 
   if (settings.paymentPending && currentView !== 'admin') {
@@ -257,6 +278,52 @@ export default function App() {
         >
           <Settings size={24} />
         </button>
+
+        {showPasswordPrompt && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/20 backdrop-blur-sm">
+            <form 
+              onSubmit={handlePasswordSubmit}
+              className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm border border-stone-100 flex flex-col gap-4 animate-in fade-in zoom-in duration-200"
+            >
+              <h2 className="text-lg font-serif font-medium text-stone-800">Admin Login</h2>
+              <div className="space-y-1">
+                <input
+                  type="password"
+                  value={passwordInput}
+                  onChange={(e) => {
+                    setPasswordInput(e.target.value);
+                    setPasswordError(false);
+                  }}
+                  placeholder="Enter admin password"
+                  autoFocus
+                  className="w-full px-3 py-2 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-stone-900 text-stone-800"
+                />
+                {passwordError && (
+                  <p className="text-xs text-red-500 font-medium">Incorrect password</p>
+                )}
+              </div>
+              <div className="flex justify-end gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPasswordPrompt(false);
+                    setPasswordInput('');
+                    setPasswordError(false);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-lg transition-colors shadow-sm"
+                >
+                  Unlock
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
       </div>
     );
   }
