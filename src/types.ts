@@ -57,6 +57,10 @@ export interface ECardSettings {
   footerInviteDate?: string;
   footerInviteFamilies?: string;
   footerInviteBgColor?: string;
+  
+  // New section option for holding page
+  paymentPending?: boolean;
+  paymentPendingText?: string;
 }
 
 export const defaultSettings: ECardSettings = {
@@ -113,4 +117,6 @@ export const defaultSettings: ECardSettings = {
   footerInviteDate: '12th July 2026',
   footerInviteFamilies: 'NAMDEV & KAPADIA FAMILIES',
   footerInviteBgColor: '',
+  paymentPending: false,
+  paymentPendingText: "'Pranay weds Alisha' wedding Invitation website didn't purchase yet",
 };

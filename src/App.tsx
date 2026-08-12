@@ -245,6 +245,22 @@ export default function App() {
     setCurrentView('admin');
   };
 
+  if (settings.paymentPending && currentView !== 'admin') {
+    return (
+      <div className="w-screen h-screen flex flex-col items-center justify-center bg-white text-stone-900 p-8 text-center relative overflow-hidden selection:bg-stone-200">
+        <h1 className="text-2xl md:text-4xl font-serif max-w-4xl leading-relaxed tracking-wide z-10">
+          {settings.paymentPendingText || "'Pranay weds Alisha' wedding Invitation website didn't purchase yet"}
+        </h1>
+        <button
+          onClick={handleOpenAdmin}
+          className="fixed top-4 right-4 z-[60] p-3 bg-black/5 backdrop-blur-sm hover:bg-black/10 text-stone-600 hover:text-stone-900 rounded-full shadow-sm transition-all"
+        >
+          <Settings size={24} />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-stone-900 selection:bg-stone-200">
       {settings.musicUrl && (

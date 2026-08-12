@@ -245,7 +245,7 @@ const AudioUploadField = ({
 };
 
 export function AdminPanel({ settings, setSettings, onExit }: Props) {
-  const [activeTab, setActiveTab] = useState<'images' | 'layout' | 'text' | 'events' | 'content'>('images');
+  const [activeTab, setActiveTab] = useState<'images' | 'layout' | 'text' | 'events' | 'content' | 'advanced'>('images');
   const [previewView, setPreviewView] = useState<'opening' | 'hero'>('opening');
   const [activeTextId, setActiveTextId] = useState<string | null>(
     settings.textElements && settings.textElements.length > 0 ? settings.textElements[0].id : null
@@ -351,10 +351,10 @@ export function AdminPanel({ settings, setSettings, onExit }: Props) {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-stone-100 p-2 gap-2 bg-stone-50">
+        <div className="flex overflow-x-auto border-b border-stone-100 p-2 gap-2 bg-stone-50">
           <button
             onClick={() => { setActiveTab('images'); }}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 min-w-fit whitespace-nowrap px-3 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
               activeTab === 'images' ? 'bg-white shadow-sm border border-stone-200 text-stone-900' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
             }`}
           >
@@ -363,7 +363,7 @@ export function AdminPanel({ settings, setSettings, onExit }: Props) {
           </button>
           <button
             onClick={() => { setActiveTab('layout'); setPreviewView('opening'); }}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 min-w-fit whitespace-nowrap px-3 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
               activeTab === 'layout' ? 'bg-white shadow-sm border border-stone-200 text-stone-900' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
             }`}
           >
@@ -372,7 +372,7 @@ export function AdminPanel({ settings, setSettings, onExit }: Props) {
           </button>
           <button
             onClick={() => { setActiveTab('text'); setPreviewView('opening'); }}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 min-w-fit whitespace-nowrap px-3 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
               activeTab === 'text' ? 'bg-white shadow-sm border border-stone-200 text-stone-900' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
             }`}
           >
@@ -381,7 +381,7 @@ export function AdminPanel({ settings, setSettings, onExit }: Props) {
           </button>
           <button
             onClick={() => { setActiveTab('events'); setPreviewView('hero'); }}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 min-w-fit whitespace-nowrap px-3 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
               activeTab === 'events' ? 'bg-white shadow-sm border border-stone-200 text-stone-900' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
             }`}
           >
@@ -390,12 +390,21 @@ export function AdminPanel({ settings, setSettings, onExit }: Props) {
           </button>
           <button
             onClick={() => { setActiveTab('content'); setPreviewView('hero'); }}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 min-w-fit whitespace-nowrap px-3 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
               activeTab === 'content' ? 'bg-white shadow-sm border border-stone-200 text-stone-900' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
             }`}
           >
             <Type className="w-4 h-4" />
             Content
+          </button>
+          <button
+            onClick={() => { setActiveTab('advanced'); }}
+            className={`flex-1 min-w-fit whitespace-nowrap px-3 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'advanced' ? 'bg-white shadow-sm border border-stone-200 text-stone-900' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
+            }`}
+          >
+            <Settings2 className="w-4 h-4" />
+            Advanced
           </button>
         </div>
 
@@ -839,6 +848,39 @@ export function AdminPanel({ settings, setSettings, onExit }: Props) {
                   <input type="color" name="footerInviteBgColor" value={settings.footerInviteBgColor || '#ffffff'} onChange={handleChange} className="h-10 w-20 cursor-pointer rounded border border-stone-200" />
                   <input type="text" name="footerInviteBgColor" value={settings.footerInviteBgColor || ''} onChange={handleChange} placeholder="e.g. transparent or #ffffff" className="flex-1 px-3 py-2 border border-stone-200 rounded-md focus:ring-stone-900 focus:border-stone-900 sm:text-sm text-stone-600 uppercase" />
                 </div>
+              </div>
+            </div>
+          ) : activeTab === 'advanced' ? (
+            <div className="space-y-6">
+              <h3 className="text-lg font-medium text-stone-800 border-b pb-2">Advanced Settings</h3>
+              <div className="space-y-4 bg-white p-5 rounded-xl border border-stone-100 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="block text-sm font-medium text-stone-900">Lock Website</label>
+                    <p className="text-xs text-stone-500 mt-1">Hide the website and show a holding page (Admin panel button remains visible)</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer"
+                      checked={settings.paymentPending || false}
+                      onChange={(e) => setSettings(prev => ({ ...prev, paymentPending: e.target.checked }))}
+                    />
+                    <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-stone-900"></div>
+                  </label>
+                </div>
+                
+                {settings.paymentPending && (
+                  <div className="pt-4 border-t border-stone-100">
+                    <label className="block text-sm font-medium text-stone-800 mb-2">Holding Page Text</label>
+                    <textarea
+                      value={settings.paymentPendingText || "'Pranay weds Alisha' wedding Invitation website didn't purchase yet"}
+                      onChange={(e) => setSettings(prev => ({ ...prev, paymentPendingText: e.target.value }))}
+                      className="w-full px-3 py-2 border border-stone-200 rounded-md focus:ring-stone-900 sm:text-sm text-stone-600 resize-none"
+                      rows={3}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ) : activeTab === 'images' ? (
