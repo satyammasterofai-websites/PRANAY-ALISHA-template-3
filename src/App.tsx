@@ -14,6 +14,8 @@ import { Butterflies } from './components/Butterflies';
 
 type ViewState = 'opening' | 'hero' | 'admin';
 
+const uploadCache = new Map<string, string>();
+
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewState>('opening');
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -56,7 +58,11 @@ export default function App() {
           const resolveUrl = async (url: string) => {
             if (url && typeof url === 'string' && url.startsWith('ecard-file://')) {
               const dataUrl = await loadLargeFile(url);
-              if (dataUrl) return dataUrl;
+              if (dataUrl) {
+                // Populate cache so we don't re-upload if we save it back
+                uploadCache.set(dataUrl, url);
+                return dataUrl;
+              }
               return ''; // Return empty string so broken ecard-file:// doesn't show up in image src
             }
             return url;
@@ -122,7 +128,7 @@ export default function App() {
     };
     
     loadSettings();
-  }, []);
+  }, [cardId]);
 
   // Save settings whenever they change, with a slight debounce
   useEffect(() => {
@@ -134,7 +140,12 @@ export default function App() {
           // Check for large files and chunk them
           const prepareUrl = async (url: string, id: string) => {
             if (url && typeof url === 'string' && url.startsWith('data:') && url.length > 50000) {
-               return await saveLargeFile(`${cardId}-${id}`, url);
+               if (uploadCache.has(url)) {
+                 return uploadCache.get(url)!;
+               }
+               const ecardUrl = await saveLargeFile(`${cardId}-${id}`, url);
+               uploadCache.set(url, ecardUrl);
+               return ecardUrl;
             }
             return url;
           };
@@ -178,7 +189,12 @@ export default function App() {
     try {
       const prepareUrl = async (url: string, id: string) => {
         if (url && typeof url === 'string' && url.startsWith('data:') && url.length > 50000) {
-           return await saveLargeFile(`${cardId}-${id}`, url);
+           if (uploadCache.has(url)) {
+             return uploadCache.get(url)!;
+           }
+           const ecardUrl = await saveLargeFile(`${cardId}-${id}`, url);
+           uploadCache.set(url, ecardUrl);
+           return ecardUrl;
         }
         return url;
       };
@@ -226,28 +242,6 @@ export default function App() {
   };
 
   const handleOpenAdmin = () => {
-    let currentCardId = cardId;
-    
-    // Automatically grant master admin rights if accessed via the AI Studio Development URL (-dev-)
-    // Shared links (-pre-) will not get this right.
-    const isDevUrl = window.location.hostname.includes('-dev-');
-    if (isDevUrl) {
-      localStorage.setItem('is-master-admin', 'true');
-    }
-    const isMasterAdmin = localStorage.getItem('is-master-admin') === 'true';
-    
-    // Check if they own this specific card
-    const isOwner = localStorage.getItem('owns-' + currentCardId) === 'true';
-    
-    if (currentCardId === 'main-settings' && !isMasterAdmin && !isOwner) {
-      const newId = `remix-${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 5)}`;
-      setCardId(newId);
-      localStorage.setItem('owns-' + newId, 'true');
-      
-      setSettings(prev => ({ ...prev, remixOf: currentCardId }));
-      currentCardId = newId;
-      window.history.replaceState(null, '', `?id=${newId}`);
-    }
     setCurrentView('admin');
   };
 
