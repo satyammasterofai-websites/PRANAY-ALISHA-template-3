@@ -88,7 +88,12 @@ const ImageUploadField = ({
              referrerPolicy="no-referrer" 
             
             onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://placehold.co/600x400/eeeeee/999999?text=Invalid+Image+URL';
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.parentElement?.classList.add('bg-stone-200');
+            }}
+            onLoad={(e) => {
+              e.currentTarget.style.display = 'block';
+              e.currentTarget.parentElement?.classList.remove('bg-stone-200');
             }}
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">

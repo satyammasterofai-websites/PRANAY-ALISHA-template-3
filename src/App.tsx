@@ -57,6 +57,7 @@ export default function App() {
             if (url && typeof url === 'string' && url.startsWith('ecard-file://')) {
               const dataUrl = await loadLargeFile(url);
               if (dataUrl) return dataUrl;
+              return ''; // Return empty string so broken ecard-file:// doesn't show up in image src
             }
             return url;
           };
